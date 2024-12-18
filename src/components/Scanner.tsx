@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-//import { questions } from '../data/questions';
 import type { ScanResult } from '../types';
 import type { Question } from '../types';
 import NameInput from './NameInput';
@@ -89,12 +88,12 @@ const Scanner: React.FC = () => {
     setResult(null);
   };
 
-  if (!name) {
-    return <NameInput onSubmit={handleNameSubmit} onLeaderboard={handleShowLeaderboard} />;
-  }
-
   if (showLeaderboard) {
     return <Leaderboard />;
+  }
+
+  if (!name) {
+    return <NameInput onSubmit={handleNameSubmit} onLeaderboard={handleShowLeaderboard} />;
   }
 
   if (isScanning) {
