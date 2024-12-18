@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
-import { questions } from '../data/questions';
+//import { questions } from '../data/questions';
 import type { ScanResult } from '../types';
+import type { Question } from '../types';
 import NameInput from './NameInput';
 import ScanningAnimation from './ScanningAnimation';
-
+import { useEffect } from 'react';
+import axios from 'axios';
 const Scanner: React.FC = () => {
   const [name, setName] = useState('');
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const fetchQuestions = async () => {
+    const res = await axios.get('http://localhost:3000/questions');
+    console.log("fetchQuestions");
+    console.log(res.data);
+    setQuestions(res.data);
+  };
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
 
   const handleNameSubmit = (submittedName: string) => {
     setName(submittedName);
@@ -34,6 +47,7 @@ const Scanner: React.FC = () => {
     const score = (maxPoints - totalPoints) / maxPoints * 100;
 
     const verdict: ScanResult = {
+      name: name,
       verdict: score >= 50 ? 'NICE' : 'NAUGHTY',
       score: Math.round(score),
       message: getResultMessage(score)
@@ -41,6 +55,16 @@ const Scanner: React.FC = () => {
 
     setResult(verdict);
     setIsScanning(false);
+
+    axios.post('http://localhost:3000/scan-results', verdict)
+      .then((res) => {
+        console.log("POST to /scan-results");
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.error("Failed to save scan result", error);
+      });
+    
   };
 
   const getResultMessage = (score: number): string => {
