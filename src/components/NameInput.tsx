@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 
 interface NameInputProps {
   onSubmit: (name: string) => void;
+  onLeaderboard: (showLeaderboard: boolean) => void;
 }
 
-const NameInput: React.FC<NameInputProps> = ({ onSubmit }) => {
+const NameInput: React.FC<NameInputProps> = ({ onSubmit, onLeaderboard }) => {
   const [inputName, setInputName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,6 +39,14 @@ const NameInput: React.FC<NameInputProps> = ({ onSubmit }) => {
         className="w-full bg-gradient-to-r from-red-500 to-green-500 hover:from-red-600 hover:to-green-600 text-white font-bold py-4 px-6 rounded-lg disabled:opacity-50 transition-all transform hover:scale-105"
       >
         Begin Santa's Scan 🎅
+      </button>
+
+      <button
+        type="button"
+        onClick={() => onLeaderboard(true)}
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-lg transition-all transform hover:scale-105"
+      >
+        View Leaderboard 🏆
       </button>
       
       <div className="text-center text-sm text-gray-500 mt-4">
