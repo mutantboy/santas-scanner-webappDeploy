@@ -12,4 +12,5 @@ export interface ScanResult {
   verdict: 'NAUGHTY' | 'NICE';
   message: string;
   score: number;
+  country?: string;
 }

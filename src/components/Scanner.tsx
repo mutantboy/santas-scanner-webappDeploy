@@ -6,6 +6,7 @@ import ScanningAnimation from './ScanningAnimation';
 import { useEffect } from 'react';
 import axios from 'axios';
 import Leaderboard from './Leaderboard';
+import { useNavigate } from 'react-router-dom';
 const Scanner: React.FC = () => {
   const [name, setName] = useState('');
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
@@ -14,6 +15,7 @@ const Scanner: React.FC = () => {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const navigate = useNavigate();
   const fetchQuestions = async () => {
     const res = await axios.get('http://localhost:3000/questions');
     console.log("fetchQuestions");
@@ -47,7 +49,7 @@ const Scanner: React.FC = () => {
   };
 
   // Rest of the component remains the same
-  const calculateResult = () => {
+  const calculateResult = async () => {
     const totalPoints = answers.reduce((sum, points) => sum + points, 0);
     const maxPoints = questions.length * 10;
     const score = (maxPoints - totalPoints) / maxPoints * 100;
@@ -59,18 +61,24 @@ const Scanner: React.FC = () => {
       message: getResultMessage(score)
     };
 
+    try {
+      const countryResponse = await axios.get('http://ip-api.com/json');
+      if (countryResponse.data.status === 'success') {
+        verdict.country = countryResponse.data.countryCode;
+      }
+    } catch (err) {
+      console.error('Failed to fetch country:', err);
+    }
+
     setResult(verdict);
     setIsScanning(false);
 
-    axios.post('http://localhost:3000/scan-results', verdict)
-      .then((res) => {
-        console.log("POST to /scan-results");
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.error("Failed to save scan result", error);
-      });
-    
+    try {
+      const res = await axios.post('http://localhost:3000/scan-results', verdict);
+      console.log("POST to /scan-results", res.data);
+    } catch (error) {
+      console.error("Failed to save scan result", error);
+    }
   };
 
   const getResultMessage = (score: number): string => {
@@ -118,12 +126,20 @@ const Scanner: React.FC = () => {
           ></div>
         </div>
         <p className="text-gray-600">Christmas Spirit Score: {result.score}%</p>
-        <button
-          onClick={resetScan}
-          className="mt-8 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-        >
-          Scan Another Person
-        </button>
+        <div className="flex gap-4 justify-center">
+          <button
+            onClick={resetScan}
+            className="mt-8 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Scan Another Person
+          </button>
+          <button
+            onClick={() => navigate('/leaderboard')}
+            className="mt-8 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+          >
+            View Leaderboard
+          </button>
+        </div>
       </div>
     );
   }
