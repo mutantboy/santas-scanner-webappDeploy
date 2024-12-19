@@ -5,14 +5,12 @@ import NameInput from './NameInput';
 import ScanningAnimation from './ScanningAnimation';
 import { useEffect } from 'react';
 import axios from 'axios';
-import Leaderboard from './Leaderboard';
 import { useNavigate } from 'react-router-dom';
 const Scanner: React.FC = () => {
   const [name, setName] = useState('');
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [isScanning, setIsScanning] = useState(false);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const navigate = useNavigate();
@@ -31,9 +29,9 @@ const Scanner: React.FC = () => {
     setName(submittedName);
   };
 
-  const handleShowLeaderboard = (showLeaderboard: boolean) => {
+  const handleShowLeaderboard = () => {
     console.log("handleShowLeaderboard");
-    setShowLeaderboard(showLeaderboard);
+    navigate('/leaderboard');
   };
 
   const handleAnswer = (naughtyPoints: number) => {
@@ -96,9 +94,6 @@ const Scanner: React.FC = () => {
     setResult(null);
   };
 
-  if (showLeaderboard) {
-    return <Leaderboard />;
-  }
 
   if (!name) {
     return <NameInput onSubmit={handleNameSubmit} onLeaderboard={handleShowLeaderboard} />;
