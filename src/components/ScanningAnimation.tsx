@@ -7,7 +7,7 @@ const ScanningAnimation: React.FC<{ name: string }> = ({ name }) => {
       {/* Santa Animation Container */}
       <div className="relative w-48 h-48 mx-auto animate-wobble">
         <img 
-          src="https://i0.wp.com/www.rickyterrell.com/wp-content/uploads/2017/12/SANTAS_LIST.gif"
+          src="https://st2.depositphotos.com/1029251/48007/i/1600/depositphotos_480071336-stock-photo-santa-claus-santa-claus-checks.jpg"
           alt="Santa checking list"
           className="w-full h-full object-cover rounded-full border-4 border-red-500"
         />
