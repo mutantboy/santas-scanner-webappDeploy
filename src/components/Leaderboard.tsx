@@ -27,7 +27,7 @@ const Leaderboard: React.FC = () => {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/leaderboard');
+                const response = await axios.get('api/leaderboard');
                 console.log("fetchLeaderboard");
                 console.log(response.data);
                 setLeaderboard(response.data);
