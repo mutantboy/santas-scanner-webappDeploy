@@ -19,25 +19,34 @@ const getCountryFlag = (countryCode: string) => {
 
 const Leaderboard: React.FC = () => {
     const navigate = useNavigate();
-    const [leaderboard, setLeaderboard] = useState<Person[]>([]);
+    const [leaderboard, setLeaderboard] = useState<Person[]>([]); 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [userCountry, setUserCountry] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/leaderboard`);
-                console.log("fetchLeaderboard");
-                console.log(response.data);
-                setLeaderboard(response.data);
-            } catch (err) {
-                console.error(err);
-                setError('Failed to fetch leaderboard');
-            } finally {
-                setLoading(false);
+          try {
+            const response = await axios.get(
+              `${import.meta.env.VITE_API_URL}/leaderboard`
+            );
+            
+            if (Array.isArray(response.data)) {
+              setLeaderboard(response.data);
+            } else {
+              setError('Invalid leaderboard data format');
+              setLeaderboard([]);
             }
+            
+          } catch (err) {
+            console.error(err);
+            setError('Failed to fetch leaderboard');
+            setLeaderboard([]); 
+          } finally {
+            setLoading(false);
+          }
         };
+    
 
         fetchLeaderboard();
     }, []);
@@ -58,8 +67,13 @@ const Leaderboard: React.FC = () => {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
-    }
+        return (
+          <div className="text-center p-8">
+            <div className="animate-spin inline-block w-8 h-8 border-4 border-red-500 rounded-full border-t-transparent"></div>
+            <p className="mt-4 text-white">Checking Santa's list...</p>
+          </div>
+        );
+      }
 
     if (error) {
         return <div>{error}</div>;
@@ -100,7 +114,7 @@ const Leaderboard: React.FC = () => {
                 </p>
             )}
             <div className="space-y-4">
-                {leaderboard.map(person => (
+                {leaderboard?.map(person => (
                     <div 
                         key={person.id}
                         className="p-3 sm:p-4 bg-white rounded-lg shadow-md border-2 border-red-200"
