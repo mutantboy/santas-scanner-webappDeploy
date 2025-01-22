@@ -54,9 +54,9 @@ const Leaderboard: React.FC = () => {
     useEffect(() => {
         const fetchUserCountry = async () => {
             try {
-                const response = await axios.get('https://ip-api.com/json');
-                if (response.data.status === 'success') {
-                    setUserCountry(response.data.countryCode);
+                const countryResponse = await axios.get(`${import.meta.env.VITE_API_URL}/country`);
+                if (countryResponse.data.status === 'success') {
+                    setUserCountry(countryResponse.data.countryCode);
                 }
             } catch (err) {
                 console.error('Failed to fetch country:', err);

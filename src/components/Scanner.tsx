@@ -61,6 +61,17 @@ const Scanner: React.FC = () => {
     }
   };
 
+  const retryRequest = async (fn: Function, retries = 3) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn();
+      } catch (error) {
+        if (i === retries - 1) throw error;
+        await new Promise(res => setTimeout(res, 1000 * (i + 1)));
+      }
+    }
+  };
+
   // Rest of the component remains the same
   const calculateResult = async () => {
     const totalPoints = answers.reduce((sum, points) => sum + points, 0);
@@ -75,9 +86,12 @@ const Scanner: React.FC = () => {
     };
 
     try {
-      const countryResponse = await axios.get('https://ip-api.com/json');
-      if (countryResponse.data.status === 'success') {
-        verdict.country = countryResponse.data.countryCode;
+      const countryResponse = await axios.get(`${import.meta.env.VITE_API_URL}/country`, {
+        timeout: 3000,
+        validateStatus: (status) => status < 500 // Don't reject 4xx
+      });
+      if (countryResponse.data) {
+        verdict.country = countryResponse.data?.countryCode;
       }
     } catch (err) {
       console.error('Failed to fetch country:', err);
@@ -87,8 +101,11 @@ const Scanner: React.FC = () => {
     setIsScanning(false);
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/scan-results`, verdict);
-      console.log("POST to /scan-results", res.data);
+      await retryRequest(async () => {
+        await axios.post(`${import.meta.env.VITE_API_URL}/scan-results`, verdict, {
+          timeout: 5000
+        });
+      }, 2); // Retry twice
     } catch (error) {
       console.error("Failed to save scan result", error);
     }
