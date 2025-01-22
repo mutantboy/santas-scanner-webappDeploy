@@ -9,21 +9,36 @@ import { useNavigate } from 'react-router-dom';
 const Scanner: React.FC = () => {
   const [name, setName] = useState('');
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+  const [questionsLoading, setQuestionsLoading] = useState(true);
+  const [questionsError, setQuestionsError] = useState('');
   const [answers, setAnswers] = useState<number[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const navigate = useNavigate();
   const fetchQuestions = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/questions`);
-    console.log("fetchQuestions");
-    console.log(res.data);
-    setQuestions(res.data);
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/questions`);
+      setQuestions(res.data);
+    } catch (error) {
+      console.error("Failed to fetch questions:", error);
+      setQuestionsError('Failed to load questions. Please refresh the page.');
+    } finally {
+      setQuestionsLoading(false);
+    }
   };
+
   useEffect(() => {
     fetchQuestions();
   }, []);
 
+  if (questionsLoading) {
+    return <div className="text-center p-8 text-white">Loading questions...</div>;
+  }
+
+  if (questionsError) {
+    return <div className="text-center p-8 text-red-500">{questionsError}</div>;
+  }
 
   const handleNameSubmit = (submittedName: string) => {
     setName(submittedName);
@@ -140,6 +155,9 @@ const Scanner: React.FC = () => {
   }
 
   const currentQ = questions[currentQuestion];
+  if (!currentQ) {
+    return <div className="text-center p-8 text-red-500">No questions available</div>;
+  }
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-center text-red-700">
