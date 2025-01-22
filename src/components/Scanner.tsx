@@ -75,7 +75,7 @@ const Scanner: React.FC = () => {
     };
 
     try {
-      const countryResponse = await axios.get('http://ip-api.com/json');
+      const countryResponse = await axios.get('https://ip-api.com/json');
       if (countryResponse.data.status === 'success') {
         verdict.country = countryResponse.data.countryCode;
       }
