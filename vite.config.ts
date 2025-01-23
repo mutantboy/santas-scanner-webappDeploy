@@ -9,11 +9,12 @@ export default defineConfig({
     host: true
   },
   define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'http://localhost:3000'),
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'https://santas-scanner-backenddeploy-production.up.railway.app' || 'http://localhost:3000'),
   }, 
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    sourcemap: true 
+    sourcemap: true,
+    manifest: true
   }  
 });
