@@ -2,5 +2,6 @@
     "buildCommand": "npm run build",
     "installCommand": "npm install",
     "startCommand": "npm run start",
-    "outputDirectory": "dist"
+    "outputDirectory": "dist",
+    "nixpacksConfigPath": "nixpacks.toml"
   }
