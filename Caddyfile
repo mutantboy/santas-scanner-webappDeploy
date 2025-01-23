@@ -3,4 +3,13 @@
   encode gzip
   file_server
   try_files {path} /index.html
+  route /api/* {
+  reverse_proxy https://santas-scanner-backenddeploy-production.up.railway.app {
+    transport http {
+      tls
+      tls_insecure_skip_verify
+    }
+    header_up Host {http.reverse_proxy.upstream.hostport}
+    header_up X-Real-IP {http.request.remote.host}
+  }
 }
