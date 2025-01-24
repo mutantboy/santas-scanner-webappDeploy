@@ -18,8 +18,15 @@ const Scanner: React.FC = () => {
   const navigate = useNavigate();
   const fetchQuestions = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/questions`);
-      setQuestions(res.data);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/questions`, {
+        timeout: 10000,
+        headers: {'Cache-Control': 'no-cache'}
+      });
+      if (res.data && Array.isArray(res.data)) {
+        setQuestions(res.data);
+      } else {
+        throw new Error('Invalid questions format');
+      }    
     } catch (error) {
       console.error("Failed to fetch questions:", error);
       setQuestionsError('Failed to load questions. Please refresh the page.');
